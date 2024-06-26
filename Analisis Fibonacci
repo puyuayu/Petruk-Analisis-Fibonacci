@@ -1,0 +1,56 @@
+// Purwati Ayu Utami (2357051007)
+
+#include <iostream>
+#include <unordered_map>
+#include <chrono>
+#include <functional>
+
+using namespace std;
+using namespace std::chrono;
+
+long long fibonacci_recursive(int n) {
+    if (n <= 1)
+        return n;
+    else
+        return fibonacci_recursive(n-1) + fibonacci_recursive(n-2);
+}
+
+unordered_map<int, long long> memo;
+long long fibonacci_dynamic(int n) {
+    if (memo.find(n) != memo.end())
+        return memo[n];
+    if (n <= 1)
+        return n;
+    else {
+        memo[n] = fibonacci_dynamic(n-1) + fibonacci_dynamic(n-2);
+        return memo[n];
+    }
+}
+
+pair<long long, double> measure_time(function<long long(int)> func, int n) {
+    auto start_time = high_resolution_clock::now();
+    long long result = func(n);
+    auto end_time = high_resolution_clock::now();
+    duration<double> execution_time = duration_cast<duration<double>>(end_time - start_time);
+    return {result, execution_time.count()};
+}
+
+int main() {
+    int values_of_n[] = {10, 25, 30, 40, 50};
+    int num_values = sizeof(values_of_n) / sizeof(values_of_n[0]);
+
+    cout << "Hasil waktu eksekusi untuk Fibonacci:" << endl;
+    cout << "-----------------------------------" << endl;
+    cout << "n\tRekursif (s)\tDynamic (s)" << endl;
+
+    for (int i = 0; i < num_values; ++i) {
+        int n = values_of_n[i];
+
+        auto result_recursive = measure_time(fibonacci_recursive, n);
+        auto result_dynamic = measure_time(fibonacci_dynamic, n);
+
+        cout << n << "\t" << result_recursive.second << "\t\t" << result_dynamic.second << endl;
+    }
+
+    return 0;
+}
